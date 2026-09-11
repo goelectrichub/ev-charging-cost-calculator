@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Free EV charging cost calculator to estimate the cost of charging an electric vehicle.">
+  <title>EV Charging Cost Calculator</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f3f7f5;
+      color: #17231d;
+      line-height: 1.6;
+    }
+
+    .container {
+      width: min(900px, 92%);
+      margin: 50px auto;
+    }
+
+    .card {
+      background: #ffffff;
+      border-radius: 16px;
+      padding: 32px;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+    }
+
+    h1 {
+      margin-top: 0;
+      color: #126b3a;
+      font-size: 34px;
+    }
+
+    .intro {
+      color: #526158;
+      margin-bottom: 28px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+
+    label {
+      display: block;
+      font-weight: 600;
+      margin-bottom: 7px;
+    }
+
+    input {
+      width: 100%;
+      padding: 13px;
+      border: 1px solid #ccd7d0;
+      border-radius: 8px;
+      font-size: 16px;
+    }
+
+    button {
+      width: 100%;
+      margin-top: 24px;
+      padding: 14px;
+      border: none;
+      border-radius: 8px;
+      background: #126b3a;
+      color: white;
+      font-size: 17px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #0d542d;
+    }
+
+    .result {
+      display: none;
+      margin-top: 25px;
+      padding: 22px;
+      background: #e9f7ef;
+      border-left: 5px solid #126b3a;
+      border-radius: 8px;
+    }
+
+    .result h2 {
+      margin-top: 0;
+      color: #126b3a;
+    }
+
+    .result strong {
+      font-size: 28px;
+    }
+
+    .formula {
+      margin-top: 28px;
+      padding: 18px;
+      background: #f7f9f8;
+      border-radius: 8px;
+      font-size: 14px;
+      color: #526158;
+    }
+
+    .footer {
+      text-align: center;
+      margin-top: 25px;
+      color: #66736b;
+      font-size: 14px;
+    }
+
+    .footer a {
+      color: #126b3a;
+      text-decoration: none;
+      font-weight: bold;
+    }
+
+    @media (max-width: 650px) {
+      .grid {
+        grid-template-columns: 1fr;
+      }
+
+      .card {
+        padding: 22px;
+      }
+
+      h1 {
+        font-size: 28px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <main class="container">
+    <section class="card">
+
+      <h1>EV Charging Cost Calculator</h1>
+
+      <p class="intro">
+        Estimate the approximate cost of charging your electric vehicle
+        based on battery size, current battery level, target charge level,
+        and electricity price.
+      </p>
+
+      <div class="grid">
+
+        <div>
+          <label for="battery">Battery Capacity (kWh)</label>
+          <input type="number" id="battery" min="1" step="0.1" value="60">
+        </div>
+
+        <div>
+          <label for="current">Current Charge (%)</label>
+          <input type="number" id="current" min="0" max="100" value="20">
+        </div>
+
+        <div>
+          <label for="target">Target Charge (%)</label>
+          <input type="number" id="target" min="1" max="100" value="80">
+        </div>
+
+        <div>
+          <label for="price">Electricity Price ($/kWh)</label>
+          <input type="number" id="price" min="0" step="0.001" value="0.15">
+        </div>
+
+        <div>
+          <label for="efficiency">Charging Efficiency (%)</label>
+          <input type="number" id="efficiency" min="50" max="100" value="90">
+        </div>
+
+      </div>
+
+      <button onclick="calculateCost()">Calculate Charging Cost</button>
+
+      <div class="result" id="result">
+        <h2>Estimated Charging Cost</h2>
+        <p>Energy added to battery:</p>
+        <strong id="energy">0 kWh</strong>
+
+        <p>Estimated electricity drawn:</p>
+        <strong id="energyDrawn">0 kWh</strong>
+
+        <p>Estimated charging cost:</p>
+        <strong id="cost">$0.00</strong>
+      </div>
+
+      <div class="formula">
+        <strong>How it works:</strong><br>
+        The calculator estimates the energy needed to increase the battery
+        from the current charge level to the target level. Charging efficiency
+        is then considered to estimate the electricity drawn from the grid.
+        The final cost is calculated using the electricity price per kWh.
+      </div>
+
+    </section>
+
+    <div class="footer">
+      More electric vehicle resources:
+      <a href="https://goelectrichub.com/ev-charging-cost-calculator/"
+         target="_blank"
+         rel="noopener">
+        EV Charging Cost Calculator
+      </a>
+    </div>
+  </main>
+
+  <script>
+    function calculateCost() {
+      const battery = parseFloat(document.getElementById("battery").value);
+      const current = parseFloat(document.getElementById("current").value);
+      const target = parseFloat(document.getElementById("target").value);
+      const price = parseFloat(document.getElementById("price").value);
+      const efficiency = parseFloat(document.getElementById("efficiency").value);
+
+      if (
+        isNaN(battery) ||
+        isNaN(current) ||
+        isNaN(target) ||
+        isNaN(price) ||
+        isNaN(efficiency)
+      ) {
+        alert("Please enter valid values in all fields.");
+        return;
+      }
+
+      if (battery <= 0 || price < 0 || efficiency <= 0) {
+        alert("Please enter valid positive values.");
+        return;
+      }
+
+      if (current < 0 || current > 100 || target < 0 || target > 100) {
+        alert("Battery percentages must be between 0 and 100.");
+        return;
+      }
+
+      if (target <= current) {
+        alert("Target charge must be higher than current charge.");
+        return;
+      }
+
+      const percentageNeeded = (target - current) / 100;
+
+      const energyAdded = battery * percentageNeeded;
+
+      const energyDrawn = energyAdded / (efficiency / 100);
+
+      const totalCost = energyDrawn * price;
+
+      document.getElementById("energy").textContent =
+        energyAdded.toFixed(2) + " kWh";
+
+      document.getElementById("energyDrawn").textContent =
+        energyDrawn.toFixed(2) + " kWh";
+
+      document.getElementById("cost").textContent =
+        "$" + totalCost.toFixed(2);
+
+      document.getElementById("result").style.display = "block";
+    }
+  </script>
+
+</body>
+</html>
